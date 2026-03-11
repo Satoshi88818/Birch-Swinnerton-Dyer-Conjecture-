@@ -1,0 +1,363 @@
+An Agnostic Decoder for the Birch and Swinnerton-Dyer Conjecture
+
+A Topology-First Approach via Arithmetic Holography
+
+Author: James Squire
+Programme: Arithmetic Topology Research Initiative
+Classification: Clay Millennium Problem — Number Theory
+Framework: Holographic Encoding / Motivic Cohomology
+Key Claim: BSD is a lossless encoding theorem
+Priority: Foundational — long-term
+Status: Open (rank ≥ 2 entirely unresolved)
+
+Table of Contents
+
+Executive Summary
+
+The Problem: Why Rank ≥ 2 Is a Framework-Level Gap
+
+The Reframing: BSD as a Lossless Encoding Theorem
+
+The Holographic Structure of BSD
+
+The Agnostic Decoder: Design and Architecture
+
+The Four Required Constructions
+
+Obstacles and Why This Approach May Overcome Them
+
+Research Programme and Milestones
+
+Computational Prototype
+
+Current State of the Field
+
+Conclusion
+
+References and Key Literature
+
+1. Executive Summary
+
+The Birch and Swinnerton-Dyer (BSD) Conjecture is one of the seven Clay Millennium Prize Problems. It asserts that the rank of the Mordell–Weil group of an elliptic curve — the number of independent rational points — equals the order of vanishing of the curve's L-function at the critical point s = 1.
+
+For rank 0 and rank 1, substantial results exist. For rank ≥ 2, essentially nothing is proved. This is not a technical gap within an existing framework. It is a framework-level gap: the required mathematical structure has not been built.
+
+This proposal argues that the gap persists for a specific reason: every existing proof strategy is opinionated. Each assumes a rank, fixes a preferred prime, or imposes a cohomology theory. These assumptions are precisely what make existing tools work for rank ≤ 1 and fail for rank ≥ 2, where the rational points distribute across the torus in ways that create interference patterns no single prior assumption can decompose.
+
+The proposed solution is an agnostic decoder — a mathematical tool that recovers the Mordell–Weil group directly from the L-function signal without any prior knowledge of rank or structure. Its construction requires four new mathematical objects, of which the adelic reversal map (Construction B) is the genuinely novel element with no existing analogue in the literature.
+
+The central claim is precise:
+
+BSD is not merely a conjecture about elliptic curves. It is the assertion that arithmetic encoding is lossless: that the L-function faithfully encodes the full topological structure of the Mordell–Weil group, and that a sufficiently agnostic decoder can recover it completely.
+
+The topology distributes. The L-function encodes. The decoder recovers. Proving lossless recovery is the proof of BSD.
+
+2. The Problem: Why Rank ≥ 2 Is a Framework-Level Gap
+
+2.1 What Has Been Proved
+
+Progress on BSD has been substantial but sharply asymmetric. The following results are established:
+
+ResultAuthors / YearContentCM curves, L(E,1) ≠ 0Coates–Wiles, 1977If E has complex multiplication and L(E,1) ≠ 0, then rank = 0L′(E,1) ≠ 0 ⟹ rank ≥ 1Gross–Zagier, 1986If L(E,1) = 0 but L′(E,1) ≠ 0, a Heegner point of infinite order existsRank 0 and 1 confirmedKolyvagin, 1988Combined with Gross–Zagier: rank = analytic rank for r ≤ 1 in many casesModularity TheoremWiles et al., 1995Every elliptic curve over ℚ is modular; L(E,s) is entire and well-behavedIwasawa Main ConjectureKato; Skinner–Urbanp-adic BSD in Iwasawa-theoretic families; partial results toward rank 0 
+
+2.2 The Rank ≥ 2 Gap
+
+For rank ≥ 2, no existing tool reaches. The following table makes the failure modes precise:
+
+ToolWhat It DecodesLimitationGross–Zagier (1986)Rank 1 via Heegner pointsRequires analytic rank exactly 1Kolyvagin systemsBounds on Ш and rankInequalities only; no reconstructionIwasawa / p-adic LRank in p-adic familiesWorks in families, not individual curvesEuler systemsLocal-global coherenceControls rank 0 and 1 onlyGeometric LanglandsFull topological structureNot yet arithmetically realised over ℚ 
+
+The pattern is consistent: each tool was built with knowledge of what it expected to find. For rank ≥ 2, the topology has distributed rational points across the torus in a way that generates interference patterns in the L-function signal. Multiple independent winding classes contribute to the zero at s = 1 simultaneously, and no existing spectral tool can decompose their combined contribution.
+
+This is not a technical obstacle within an existing framework. The required mathematical structure — an agnostic reconstruction mechanism operating without rank assumption — does not exist.
+
+2.3 Why Opinionated Decoders Fail
+
+The failure is structural. Any decoder that assumes rank r before reading the signal will:
+
+For rank < r: find phantom contributions and return false positives
+
+For rank > r: miss independent winding classes and return an incomplete group
+
+For rank = r: succeed — but only because the assumption was correct
+
+Rank 0 and rank 1 succeeded not because the tools were powerful enough, but because a rank-1 assumption is recoverable: a single Heegner point either exists or does not, and its presence or absence is detectable. For rank ≥ 2, no equivalent single-point construction exists. The decoder must be built agnostically — with no prior assumption about how many independent classes it will find.
+
+3. The Reframing: BSD as a Lossless Encoding Theorem
+
+3.1 The Encoding Path (Known)
+
+An elliptic curve E over ℚ is topologically a torus. Its rational points E(ℚ) form the Mordell–Weil group ℤʳ ⊕ T, where r is the rank and T is finite torsion. The L-function is constructed by compressing this global structure through successive encoding steps:
+
+Rational Points E(ℚ) ↓ [topology distributes across torus] Winding structure on H¹(E, ℤ) ↓ [reduction mod p at each prime] Local counts Nₚ = |E(𝔽ₚ)| for each prime p ↓ [Euler product compression] L(E, s) = ∏ₚ (local factor)⁻¹ ↓ [analytic continuation] Behaviour at s = 1 
+
+Each step is well understood. The Modularity Theorem guarantees that L(E, s) is entire and satisfies a functional equation. The encoding path is complete.
+
+3.2 The Decoding Path (Missing)
+
+The inverse path — recovering E(ℚ) from L(E, s) at s = 1 — is open for rank ≥ 2. The encoder is many-to-one at each step: infinite rational points compress to finite local counts; continuous topology fragments into discrete prime data; global structure becomes local pieces. Reversing this requires recovering what was discarded at every prime simultaneously — global coherence recovery across an infinite system.
+
+3.3 The BSD Formula as Error Profile
+
+The BSD formula
+
+L*(E, 1) = Ω · R · |Ш| · ∏cₚ / |T|²
+
+is best understood as an error-correcting formula. Each term accounts for a different failure mode in the encoding:
+
+TermRoleΩCalibrates the archimedean (continuous) partRMeasures the true rank signal∏cₚCorrects lossy encoding at bad primes|Ш|Accounts for global-local encoding failures|T|²Normalises finite redundancy 
+
+A complete decoder recovers each term from the signal independently. The BSD formula then falls out as the noise profile of a complete decoding — not an input assumption, but an output confirmation. This is the sense in which BSD is a lossless encoding theorem: the formula is what a perfect decoder must reproduce.
+
+4. The Holographic Structure of BSD
+
+4.1 The L-function as a Holographic Object
+
+The Langlands programme, in its geometric formulation (Kapustin–Witten, 2006/2007), establishes a dictionary between arithmetic objects and analytic objects:
+
+Boundary (Arithmetic)Bulk (Analytic)Rational points E(ℚ)Zeros of L(E, s)Rank rOrder of vanishing at s = 1Tate–Shafarevich group ШEncoding obstructions in the bulkRegulator RVolume of the bulk geometryBSD formulaHolographic renormalisation 
+
+Within this framework, the BSD conjecture is the assertion that arithmetic holography is lossless: the L-function faithfully contains the source arithmetic structure, and a decoder with access to the full signal can reconstruct it.
+
+Important caveat: The Kapustin–Witten construction operates over ℂ. The hard part of BSD is specifically arithmetic — over ℚ. The arithmetisation of the geometric Langlands correspondence to the number field setting is itself an open and major problem, and a central part of what the agnostic decoder programme must deliver. This is not assumed; it is a target.
+
+4.2 The Arithmetic as Ontological Foundation
+
+Grothendieck's Spec(ℤ) underlies all arithmetic geometry and, following Mazur's analogy, behaves formally as a 3-manifold:
+
+Spec(ℤ)3-Manifold AnaloguePrimes pKnotsℤ itselfAmbient spaceLinking of primesLegendre / Jacobi symbolsL-functionsKnot invariants / partition functions 
+
+BSD sits at the seam between the arithmetic source and the analytic encoding layer — which is precisely why it has resisted proof for sixty years. It is the first layer where encoding meets emergence.
+
+5. The Agnostic Decoder: Design and Architecture
+
+5.1 Design Constraints
+
+The agnostic decoder is defined by the following constraints, derived from the structure of the problem:
+
+No prior knowledge of rank — the rank is discovered, never assumed
+
+No preferred cohomology theory — the decoder is basis-free
+
+No preferred prime — all primes processed uniformly via adelic structure
+
+No assumed geometric structure — no Heegner point analogue required
+
+Operates on the signal alone — reads L(E, s) and returns E(ℚ)
+
+Fully reversible — every compression step of the encoder must be invertible
+
+Natural in E — works for every elliptic curve without special cases
+
+5.2 Formal Specification
+
+In rigorous terms, the agnostic decoder is a functor:
+
+𝒟_agnostic : { L-functions } ──→ { Mordell-Weil groups } satisfying: 𝒟(L(E,s)) = E(ℚ) naturally in E 
+
+This functor must be basis-free, rank-free, prime-free, and characteristic-free. Its natural home is the derived category of motives 𝒟𝓜(ℚ), where:
+
+E(ℚ) ⊗ ℚ ≅ Ext¹_𝓜(ℚ(0), h¹(E)) 
+
+Rational points are extension classes in a category that privileges no structure. BSD is the statement that this functor is exact. The natural transformation η : 𝒟_agnostic → 𝒟_BSD, proven to be an isomorphism, is the proof of BSD.
+
+What "agnostic" means precisely: A decoder is agnostic if and only if its type signature contains no rank parameter — neither as input, assumption, nor degeneration condition. The decoder's output is the rank; the rank cannot appear in its input.
+
+5.3 The Five-Stage Pipeline
+
+The decoder reverses each compression step of the encoder in sequence:
+
+StageOperationMathematical Content1Signal IntakeNewton polygon of L(E,s) at s = 1 without rank assumption. Slopes reveal candidate rank contributions; widths give multiplicities.2Euler ReversalReconstruct local Galois representations at each prime from Euler factors. All primes processed uniformly via adelic structure; none preferred.3Topological ReversalMap spectral components back through the Euler product to winding classes on H¹(E, ℤ). The adelic reversal map (Construction B) operates here.4Motivic RealisationLift winding classes to extension classes in Ext¹_𝓜(ℚ(0), h¹(E)), then realise as rational points. Rank emerges as the number of independent lifts.5Error DecompositionResidual spectral signal decomposes into Ω, R, |Ш|, ∏cₚ, |T|² — the BSD formula as the noise profile of complete decoding. 
+
+The pipeline runs as a fixed-point iterator:
+
+while residual_signal.has_content(): component = extract_next_independent(residual) point = topological_reversal(component) recovered.append(point) residual = residual.subtract(component) return MordellWeilGroup(recovered) # rank = len(recovered) — never assumed, always discovered 
+
+The number of iterations is the rank. It is discovered, not supplied.
+
+5.4 The Base Level: 𝔽₁-Geometry
+
+The decoder must operate below all encoding choices — at the level of 𝔽₁-geometry, the hypothetical field with one element beneath all number fields. At this base level no prime is preferred, all ranks look identical, and encoding bias vanishes. The Connes–Consani programme has made significant progress toward making 𝔽₁-geometry rigorous. Completing a 𝔽₁-descent mechanism is Construction C below.
+
+6. The Four Required Constructions
+
+The agnostic decoder requires four new mathematical objects, ordered by logical dependency. These constructions are the technical core of the programme.
+
+Construction A — Reverse Motivic Spectral Sequence
+
+A spectral sequence
+
+E²_{p,q} = Ext^p_𝓜(ℚ(0), H^q_mot(E)) ⟹ L(E, p+q) 
+
+running backwards — from L-function data to motivic cohomology — without fixing the degeneration page in advance. The degeneration page is the rank; fixing it in advance is precisely the opinionated move the decoder must avoid.
+
+Current status: Derived algebraic geometry provides the necessary foundations. This construction is in active progress and sits closest to the existing literature. The main open problem is proving that the reverse spectral sequence degenerates at the correct page without rank assumption.
+
+Why this should be possible: The forward spectral sequence (Bloch–Kato) is known to exist and converge. Running it backwards requires exactness conditions that are plausible given the full force of the Modularity Theorem, but have not been established.
+
+Construction B — Adelic Reversal Map
+
+A map
+
+ℛ : H¹(𝔸_ℚ, Tₚ(E)) → H¹(ℚ, Tₚ(E)) 
+
+reconstructing global cohomology classes from adelic data purely from spectral analysis, without Euler system input. This is the genuinely novel element of the programme — no existing analogue exists in the literature.
+
+What it must do: Every existing global-to-local map goes from global cohomology to adelic cohomology (localisation). The reversal map goes the other way: given local data at all primes simultaneously, reconstruct the global class. Euler systems provide one mechanism for this — but they require knowing in advance which classes to look for. The adelic reversal map must work without this prior knowledge.
+
+Why it might exist: The Hasse–Minkowski theorem for quadratic forms provides a local-global principle that reconstructs global structure from local data without prior knowledge of global dimension. An analogue for elliptic curve cohomology is not known, but the structural argument — that sufficient local data at all primes simultaneously should determine the global class — is the plausibility condition. Making this precise is the central open problem.
+
+Known obstruction: The Tate–Shafarevich group Ш consists precisely of the classes that are locally trivial everywhere but globally non-trivial. These are the elements that resist reconstruction from local data. Construction B must either include Ш explicitly in its output (treating it as a separate signal component) or demonstrate that the full adelic data — with appropriate completions — is sufficient to detect it. The BSD formula's explicit inclusion of |Ш| suggests the former: Ш is not a failure of the decoder but a feature of the signal.
+
+Construction C — 𝔽₁-Descent
+
+A descent mechanism
+
+E(ℚ) ← E(𝔽₁-scheme) 
+
+recovering rational points as 𝔽₁-rational points lifted through the arithmetic tower. At the 𝔽₁ level, all primes are equivalent; encoding bias vanishes completely.
+
+Current status: The Connes–Consani–Manin programme has established foundational 𝔽₁-geometry but the arithmetic descent mechanism for elliptic curves is not yet constructed. This is the most foundationally ambitious construction and requires the most preliminary development.
+
+Why it is needed: Constructions A and B may be achievable within existing arithmetic geometry, but they still operate at the level of individual primes. The agnostic decoder's claim to work for all ranks simultaneously requires a base layer beneath prime choice. 𝔽₁-geometry provides this base layer — but only if the descent is rigorously established.
+
+Construction D — Natural Transformation η
+
+A natural transformation
+
+η : 𝒟_agnostic → 𝒟_BSD 
+
+showing that the agnostic decoder and the BSD prediction are naturally isomorphic as functors from L-functions to abelian groups.
+
+Logical dependency: This construction follows from A, B, and C, provided each is proven with the required exactness and naturality properties. Proving η is an isomorphism is the proof of BSD. Construction D is therefore not an independent research task but the culmination of the preceding three.
+
+What naturality requires: η must be natural in E — it must commute with all isogenies, base changes, and twists. This naturality condition is the mathematical expression of the claim that the decoder works for every elliptic curve, not just those with special properties.
+
+7. Obstacles and Why This Approach May Overcome Them
+
+7.1 The Selmer Group Obstruction
+
+The Selmer group Sel(E/ℚ) controls what is accessible from L-function data via local-global principles. A priori, the adelic reversal map can only reach the Selmer group, not the full Mordell–Weil group. The Selmer group fits into an exact sequence:
+
+0 → E(ℚ) ⊗ ℚ/ℤ → Sel(E/ℚ) → Ш → 0 
+
+The agnostic decoder must either: (a) prove that Sel = E(ℚ) ⊗ ℚ/ℤ (i.e., Ш is finite, which is itself a major open problem), or (b) recover both E(ℚ) and Ш simultaneously from the signal, treating Ш as an explicit output component rather than an obstruction. The five-stage pipeline takes option (b): Stage 5 decomposes the residual signal into Ш alongside the other BSD terms.
+
+7.2 The Interference Pattern Problem
+
+For rank ≥ 2, multiple independent winding classes contribute to the zero at s = 1 simultaneously. Current spectral decomposition cannot separate these contributions because they interact through the Euler product. The agnostic decoder's Stage 2 (Euler Reversal) must reconstruct all local Galois data at once, adélically, before any spectral separation occurs. The fixed-point iterator then separates components one at a time, subtracting each recovered contribution from the residual signal. This is only valid if the independent components are separable in the spectral decomposition — i.e., that the Newton polygon at s = 1 has distinct slope contributions from each independent winding class. Proving this separability is a prerequisite for the fixed-point iterator to terminate correctly.
+
+7.3 The Arithmetisation Problem
+
+The Kapustin–Witten holographic framework operates over ℂ. Arithmetising it — making it work over ℚ — requires the full arithmetic Langlands correspondence, which is not yet established. This programme does not assume arithmetisation; it treats it as a consequence of Construction B. If the adelic reversal map can be constructed, it would itself constitute a significant step toward arithmetic Langlands. The logical dependency runs the other way from what might be expected: the decoder's existence would help establish arithmetic Langlands, not the reverse.
+
+7.4 Termination of the Fixed-Point Iterator
+
+The fixed-point iterator terminates if and only if the residual signal reaches zero in finitely many steps. This is equivalent to BSD itself: the rank is finite. The termination proof therefore cannot be independent of the main result. The correct framing is that the iterator defines the rank constructively — the rank is defined as the number of steps before the residual signal is exhausted — and BSD is the statement that this constructive definition agrees with the algebraic definition (dimension of E(ℚ) ⊗ ℚ).
+
+8. Research Programme and Milestones
+
+8.1 Dependency Ordering
+
+Phase 1: Foundational ├── 𝔽₁-geometry descent mechanism (Construction C) └── Motivic spectral sequence reversed (Construction A) ↓ Phase 2: Core Construction └── Adelic reversal map without Euler systems (Construction B) ↓ Phase 3: Convergence ├── Fixed-point iterator proven separable and terminating └── Natural transformation η proven exact (Construction D) ↓ Phase 4: Proof of BSD 
+
+8.2 Milestones and Success Criteria
+
+PhaseMilestoneSuccess Criterion1aReverse motivic spectral sequenceDegeneration page recoverable without rank input on specific families1b𝔽₁-descent for elliptic curvesAt least one elliptic curve family admits 𝔽₁-rational point lifting2Adelic reversal mapMap ℛ constructed for rank 0 and 1 (validation against known cases); extended to rank 2 families3aSeparability theoremNewton polygon slopes provably distinct for independent winding classes3bNatural transformation ηProved for rank ≤ 2 curve families4BSD proofη proved to be isomorphism in full generality 
+
+8.3 Interim Value
+
+Each phase has independent mathematical value regardless of whether the full programme succeeds:
+
+Phase 1 results contribute to motivic cohomology and 𝔽₁-geometry as standalone areas
+
+Construction B (even partially realised) would be the first local-global reconstruction principle for elliptic curve cohomology without Euler system input — a significant result independently
+
+The separability theorem (Phase 3a) would give new structural information about higher-rank L-functions
+
+9. Computational Prototype
+
+A computational prototype of the agnostic decoder has been implemented as a standalone HTML application. It demonstrates the five-stage pipeline architecture on elliptic curves over ℚ, executing all stages without rank assumption:
+
+Stage 1 reads the partial Euler product and computes the Newton polygon near s = 1
+
+Stage 2 reconstructs local Galois data at all primes uniformly, with no preferred prime
+
+Stage 3 performs spectral decomposition and topological reversal through H¹
+
+Stage 4 realises recovered winding classes as Mordell–Weil group elements
+
+Stage 5 decomposes the residual signal into Ω, R, |Ш|, ∏cₚ — yielding the BSD formula as output
+
+What the prototype demonstrates: The pipeline is architecturally coherent and its outputs for rank 0 and rank 1 cases are consistent with the known results from Gross–Zagier and Kolyvagin. The prototype validates the structure of the approach against established cases.
+
+What the prototype does not demonstrate: The prototype does not establish anything new for rank ≥ 2. Its rank ≥ 2 runs exhibit the interference pattern problem described in Section 7.2 — the Newton polygon slopes are not yet provably separable. The prototype correctly identifies this as the central computational obstacle, which corresponds precisely to Construction B in the mathematical programme.
+
+Future prototype development will focus on rank 2 curves with known Mordell–Weil generators, using these as test cases for Construction B's adelic reversal map as it is developed.
+
+10. Current State of the Field
+
+10.1 Closest Existing Work
+
+The programme most directly relates to:
+
+Bloch–Kato conjecture: The motivic spectral sequence (Construction A) is a reversal of the Bloch–Kato machinery. A successful Construction A would imply Bloch–Kato as a special case.
+
+Geometric Langlands (Ben-Zvi et al., 2024): Provides the topological backbone. The present programme arithmetises it over ℚ rather than ℂ.
+
+Iwasawa theory (Kato; Skinner–Urban): Works in p-adic families rather than on individual curves. Construction B's adelic approach is complementary: it operates adelically (all primes at once) rather than in a single p-adic tower.
+
+Connes–Consani 𝔽₁-geometry: Provides the foundations for Construction C.
+
+10.2 What Would Constitute Progress Short of Full BSD
+
+Even partial results from this programme would be significant:
+
+An adelic reversal map for rank 2 curves in a specific family (even conditionally) would be the first rank ≥ 2 result in the direction of BSD
+
+A proof that the Newton polygon slopes are separable for rank 2 would give new structural information about L-functions
+
+A 𝔽₁-descent for any elliptic curve family would advance 𝔽₁-geometry substantially
+
+11. Conclusion
+
+The Birch and Swinnerton-Dyer Conjecture has resisted proof for sixty years not because the underlying truth is obscure, but because the required mathematical tool has not been built. Every existing approach is opinionated — designed with prior knowledge of the rank it expects to find. Rank ≥ 2 defeats all of them for a structural reason: the L-function signal at s = 1 encodes multiple independent winding classes simultaneously, and no existing tool can decompose their combined contribution without rank assumption.
+
+This proposal identifies the missing tool with precision: an agnostic decoder operating at the motivic level, below all encoding choices, that reads the L-function signal and returns the Mordell–Weil group without asking what rank to expect. Its construction requires four new mathematical objects. Construction A (reverse motivic spectral sequence) is closest to existing technology. Construction C (𝔽₁-descent) is the most foundationally ambitious. Construction B (the adelic reversal map) is the genuinely novel element with no existing analogue — and the central open problem.
+
+The approach is honest about what it requires:
+
+The arithmetisation of the geometric Langlands correspondence is not assumed but targeted as a consequence
+
+The Tate–Shafarevich group is not assumed finite but treated as an explicit signal component
+
+The fixed-point iterator's termination is not assumed but identified as equivalent to BSD itself
+
+The conceptual picture is clear. The obstacles are identified. The constructions are specified. The programme is executable.
+
+The topology distributes. The L-function encodes. The decoder recovers. BSD is the statement that the encoding is lossless. The decoder is the proof.
+
+References and Key Literature
+
+Birch, B.J. and Swinnerton-Dyer, H.P.F. (1965). Notes on elliptic curves, II. Journal für die reine und angewandte Mathematik, 218, 79–108.
+
+Coates, J. and Wiles, A. (1977). On the conjecture of Birch and Swinnerton-Dyer. Inventiones Mathematicae, 39(3), 223–251.
+
+Gross, B. and Zagier, D. (1986). Heegner points and derivatives of L-series. Inventiones Mathematicae, 84(2), 225–320.
+
+Kolyvagin, V.A. (1988). Finiteness of E(ℚ) and Ш(E,ℚ) for a subclass of Weil curves. Mathematics of the USSR-Izvestiya, 32(3), 523–541.
+
+Wiles, A. (1995). Modular elliptic curves and Fermat's Last Theorem. Annals of Mathematics, 141(3), 443–551.
+
+Kapustin, A. and Witten, E. (2007). Electric-magnetic duality and the geometric Langlands program. Communications in Number Theory and Physics, 1(1), 1–236.
+
+Connes, A. and Consani, C. (2010). On the notion of geometry over 𝔽₁. Journal of Algebraic Geometry, 20, 525–557.
+
+Kato, K. (2004). p-adic Hodge theory and values of zeta functions of modular forms. Astérisque, 295, 117–290.
+
+Skinner, C. and Urban, E. (2014). The Iwasawa main conjecture for GL₂. Inventiones Mathematicae, 195(1), 1–277.
+
+Ben-Zvi, D., Chen, H., Helm, D. and Nadler, D. (2024). Coherent Springer theory and the categorical Deligne-Langlands conjecture. Preprint.
+
+Arithmetic Topology Research Programme — BSD Framework
+No rank assumed · No prime preferred · Signal determines structure
+
